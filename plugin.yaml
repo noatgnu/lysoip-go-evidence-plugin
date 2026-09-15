@@ -1,0 +1,54 @@
+plugin:
+  id: "lysoip-go-evidence"
+  name: "Lyso-IP GO Evidence"
+  description: "goatools enrichment test for the expected subcellular-compartment GO term(s), default lysosomal. Downloads ~47MB of GO reference data on first run and caches it locally (~200MB uncompressed)."
+  version: "1.0.0"
+  author: "CauldronGO Team"
+  category: "lysoip-qc"
+  icon: "hub"
+  repository: "https://github.com/noatgnu/lysoip-go-evidence-plugin"
+
+runtime:
+  environments: ["python"]
+  entrypoint: "lysoip_go_evidence.py"
+
+diagram:
+  enabled: true
+
+inputs:
+  - name: "gene_lookup_file"
+    label: "Protein / Gene List"
+    type: "file"
+    required: true
+    accept: ".tsv,.txt"
+    description: "Any tidy file with protein and gene columns, e.g. abundance_long.tsv or differential_expression.tsv from earlier lysoip-* plugins"
+
+  - name: "expected_go_terms"
+    label: "Expected GO Terms"
+    type: "text"
+    required: false
+    default: "GO:0005764,GO:0005765,GO:0043202,GO:0007041"
+    description: "Comma-separated GO term IDs for the expected compartment. Default: lysosome, lysosomal membrane, lysosomal lumen, lysosomal transport."
+
+outputs:
+  - name: "go_evidence"
+    path: "go_evidence.tsv"
+    type: "data"
+    description: "Per-protein GO evidence score (-log10 of the best BH-FDR q-value among matched expected terms); proteins with no match get no row"
+    format: "tsv"
+
+execution:
+  argsMapping:
+    gene_lookup_file: "--gene_lookup_file"
+    expected_go_terms: "--expected_go_terms"
+
+  outputDir: "--output_folder"
+
+  requirements:
+    python: ">=3.11"
+    pythonRequirementsFile: "requirements.txt"
+
+example:
+  enabled: true
+  values:
+    gene_lookup_file: "examples/gene_lookup.tsv"
