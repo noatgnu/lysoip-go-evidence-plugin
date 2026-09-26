@@ -32,9 +32,14 @@ flowchart TD
     step1["Fetching GO reference data"]
     step1 --> step2
     step2["Loading GO ontology and annotations"]
-    step2 --> step3
-    step3["Loading protein/gene list"]
-    step3 --> step4
+    step2 --> load_genes
+    load_genes["Loading protein/gene list"]
+    load_genes --> has_annotations
+    has_annotations{"Any study proteins have GO annotations?"}
+    has_annotations -->|"no"| step3
+    has_annotations -->|"yes"| step4
+    step3["Writing empty result"]
+    step3 --> End([End])
     step4["Running GO enrichment study"]
     step4 --> step5
     step5["Writing GO evidence scores"]

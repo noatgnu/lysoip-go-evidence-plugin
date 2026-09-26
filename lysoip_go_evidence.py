@@ -87,20 +87,23 @@ def main():
     expected_terms = {t.strip() for t in args.expected_go_terms.split(",") if t.strip()}
     expanded_terms = expand_with_descendants(godag, expected_terms)
 
-    # @step: Loading protein/gene list
+    # @step[id=load_genes]: Loading protein/gene list
     gene_by_protein = {}
     with open(args.gene_lookup_file) as f:
         for row in csv.DictReader(f, delimiter="\t"):
             gene_by_protein[row["protein"]] = row["gene"]
 
     study_accessions = [protein for protein in gene_by_protein if protein in id2gos]
+
+    # @step-if[id=has_annotations,from=load_genes]: Any study proteins have GO annotations?
     if not study_accessions:
+        # @step[from=has_annotations:no]: Writing empty result
         with open(output_folder / "go_evidence.tsv", "w", newline="") as f:
             csv.writer(f, delimiter="\t").writerow(["protein", "gene", "go_evidence", "p_fdr_bh", "matched_terms"])
         print("No proteins had GO annotations in the reference data; wrote an empty result.", file=sys.stderr)
         return
 
-    # @step: Running GO enrichment study
+    # @step[from=has_annotations:yes]: Running GO enrichment study
     with contextlib.redirect_stdout(io.StringIO()):
         study = GOEnrichmentStudy(
             list(id2gos.keys()), id2gos, godag, propagate_counts=True, alpha=0.05, methods=["fdr_bh"]

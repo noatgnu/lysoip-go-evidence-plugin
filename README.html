@@ -133,9 +133,14 @@
     step1[&quot;Fetching GO reference data&quot;]
     step1 --&gt; step2
     step2[&quot;Loading GO ontology and annotations&quot;]
-    step2 --&gt; step3
-    step3[&quot;Loading protein/gene list&quot;]
-    step3 --&gt; step4
+    step2 --&gt; load_genes
+    load_genes[&quot;Loading protein/gene list&quot;]
+    load_genes --&gt; has_annotations
+    has_annotations{&quot;Any study proteins have GO annotations?&quot;}
+    has_annotations --&gt;|&quot;no&quot;| step3
+    has_annotations --&gt;|&quot;yes&quot;| step4
+    step3[&quot;Writing empty result&quot;]
+    step3 --&gt; End([End])
     step4[&quot;Running GO enrichment study&quot;]
     step4 --&gt; step5
     step5[&quot;Writing GO evidence scores&quot;]
