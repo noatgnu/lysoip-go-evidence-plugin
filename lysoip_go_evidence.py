@@ -1,12 +1,5 @@
 #!/usr/bin/env python3
-"""Lyso-IP QC GO evidence scorer: goatools enrichment test for the expected
-subcellular-compartment GO term(s).
-
-Ported from lysoip_qc_framework/apps/scoring/scorers/go_evidence.py and
-apps/scoring/go_data.py. GO reference data (go-basic.obo, goa_human.gaf) is
-~47MB compressed and updated periodically, so it's downloaded and cached on
-first run rather than bundled with the plugin.
-"""
+"""goatools GO enrichment test for the expected subcellular-compartment GO term(s)."""
 
 import argparse
 import contextlib
